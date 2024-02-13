@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(document).ready(function() {
+                var dessertType = [[${itemSearchDto.searchDessertType}]];
+                var str;
+                if (dessertType == "BAGGLE") {
+                    str = "베이글";
+                } else if (dessertType == "SCOON") {
+                    str = "스콘";
+                } else if (dessertType == "ICECREAM") {
+                    str = "아이스크림";
+                } else if (dessertType == "YOGERT") {
+                    str = "요거트";
+                } else if (dessertType == "SALAD") {
+                    str = "샐러드";
+                } else {
+                    str = "케이크";
+                }
+                $(".font-weight-bold.headerTitle").text(str);
+            })
+
+            function page(page) {
+                var searchDateType = $("#searchDateType").val();
+                var searchSellStatus = $("#searchSellStatus").val();
+                var searchDessertType = $("#searchDessertType").val();
+                var searchBy = $("#searchBy").val();
+                var searchQuery = $("#searchQuery").val();
+
+                location.href="/dessert/list/" + page + "?searchDateType=" + searchDateType
+                 + "&searchSellStatus=" + searchSellStatus + "&searchDessertType=" + searchDessertType
+                 + "&searchBy=" + searchBy + "&searchQuery=" + searchQuery;
+            }
+        </script>
+    </th:block>
+
+    <!-- 사용자 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <style>
+            .card-text{
+                text-overflow : ellipsis;
+                white-space : nowrap;
+                overflow : hidden;
+            }
+            a:hover{
+                text-decoration:none;
+            }
+            .center{
+                text-align:center;
+            }
+            .card {
+              cursor: pointer;
+              overflow: hidden;
+              border:none;
+            }
+            .card .img {
+                background-color: #000;
+            }
+            .card img {
+              width: 100%;
+              color: #fff;
+              transition: all 0.3s ease-in-out;
+            }
+            .foodImg_Div:before {
+              content: '';
+              background: #fff;
+              width: 0px; height: 1px;
+              position: absolute; right: 20px; top: 20px;
+              transition: all 0.35s ease;
+            }
+            .card:after {
+              content: '';
+              background: #fff;
+              width: 1px; height: 0px;
+              position: absolute; right: 20px; top: 20px;
+              transition: all 0.35s ease;
+            }
+            .card .info {
+              position: absolute; left: 10px; bottom: 0;
+              top:30px;
+              color: #fff;
+              width: 100%;
+              padding: 15px;
+              box-sizing: border-box;
+              opacity: 0;
+              transition: all 0.5s ease-in-out;
+            }
+            .card .info p {
+              font-size: 16px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              padding-bottom: 220px;
+              padding-left: 100px;
+            }
+            .card:hover .info {
+              opacity: 1;
+            }
+            .card:hover img {
+              opacity: 0.2;
+            }
+            .foodImg_Div:hover:before {
+              width: 60px;
+            }
+            .card:hover:after {
+              height: 60px;
+            }
+        </style>
+    </th:block>
+
+    <div layout:fragment="content">
+        <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+        <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+            <p class="h3 font-weight-bold" th:text="'\'' + ${itemSearchDto.searchQuery} + '\' 검색결과'"></p>
+        </div>
+        <div th:unless="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+            <div class="text-center mb-4">
+                <h1 class="font-weight-bold headerTitle"></h1>
+            </div>
+        </div>
+
+        <div class="container text-center" style="padding: 0 20px; margin-top:50px">
+            <div class="row row-cols-4">
+                <th:block th:each="item, status: ${items.getContent()}">
+                    <div class="col" style="padding: 50px 10px;">
+                        <div class="card">
+                            <a th:href="'/item/' + ${item.id}" class="text-dark" style="text-decoration-line: none;">
+                                <div class="img foodImg_Div">
+                                    <img th:src="${item.imgUrl}" class="card-img-top foodImg" th:alt="${item.itemNm}">
+                                    <div class="info">
+                                        <p class="card-text">상세보기</p>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="card-title">[[${item.itemNm}]]</h3>
+                                    <p class="card-title text-dark">[[${item.price}]]원</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+        <div th:with="start=${(items.number/maxPage)*maxPage +1},
+                end=(${(items.totalPages == 0) ?
+                1 : (start + (maxPage-1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${items.first}?'disabled' : 'defaultText'">
+                    <a th:onclick="'javascript:page('+${items.number - 1} + ')'" aria-label='Previous'
+                       class="page-link">
+                        <span aria-hidden="true" id="previous">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="page: ${#numbers.sequence(start,end)}"
+                    th:classappend="${items.number eq page-1}?'active':'defaultText'">
+                    <a th:onclick="'javascript:page('+${page -1} + ')'" th:inline="text"
+                       class="page-link">[[${page}]]</a>
+                </li>
+                <li class="page-item" th:classappend="${items.last}?'disabled' : 'defaultText'">
+                    <a th:onclick="'javascript:page(' + ${items.number + 1} + ')'" aria-label="Next"
+                       class="page-link" id="next" >
+                        <span aria-hidden="true">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="container col-6" th:object="${itemSearchDto}">
+            <div class="input-group mb-2">
+                <select th:field="*{searchDateType}" class="form-control">
+                    <option value="all">전체 기간</option>
+                    <option value="1d">1일</option>
+                    <option value="1w">1주</option>
+                    <option value="1m">1개월</option>
+                    <option value="6m">6개월</option>
+                </select>
+                <select th:field="*{searchSellStatus}" class="form-control">
+                    <option value="">판매 상태(전체)</option>
+                    <option value="SELL">판매</option>
+                    <option value="SOLD_OUT">품절</option>
+                </select>
+                <input type="hidden" th:field="*{searchDessertType}" th:value="${itemSearchDto.searchDessertType}">
+            </div>
+            <div class="input-group">
+                <div class="col-2 me-2">
+                    <select th:field="*{searchBy}" class="form-control">
+                        <option value="itemNm">상품명</option>
+                        <option value="createdBy">등록자</option>
+                    </select>
+                </div>
+                <input th:field="*{searchQuery}" type="text" class="form-control me-2" placeholder="검색어를 입력해주세요">
+                <button id="searchBtn" type="submit" class="btn btn-secondary col-2" onclick="page(0)">검색</button>
+            </div>
+        </div>
+    </div>
+</html>
