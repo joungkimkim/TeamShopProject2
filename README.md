@@ -2,9 +2,7 @@
 > [포트폴리오 주소](http://naver.me/5NAXadOY)<br/>
 > [AWS 배포 주소](http://ec2-13-209-225-61.ap-northeast-2.compute.amazonaws.com:8081)<br/>
 > [시연영상](https://www.youtube.com/watch?v=6mz-rJkCP7k)
-![image](![image](https://github.com/joungkimkim/TeamShopProject2/assets/148930569/3a07cb50-6f9a-4f14-916d-190051cee06c)
-)
-
+![image](https://github.com/joungkimkim/TeamShopProject2/assets/148930569/343312c6-bc68-480a-95cd-931a2ebf2e36)
 
 
 프로젝트 개요
